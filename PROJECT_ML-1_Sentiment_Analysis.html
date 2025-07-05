@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Science & Generative AI by SATISH @ Sathya Technologies</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        h1 {
+            text-align: center;
+            color: #2980b9;
+        }
+        code {
+            background-color: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border-left: 4px solid #3498db;
+        }
+        .timer-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #e74c3c;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 1.2em;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-weight: bold;
+        }
+        .button {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            margin: 10px 0;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #2980b9;
+        }
+        .explanation {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .dataset {
+            background-color: #e8f8f5;
+            padding: 15px;
+            border-left: 4px solid #2ecc71;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+            overflow-x: auto;
+        }
+        .note {
+            background-color: #fffde7;
+            padding: 10px;
+            border-left: 4px solid #f39c12;
+            margin: 10px 0;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header img {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="timer-container">
+        Time Remaining: <span id="timer">45:00</span>
+    </div>
+   <h3>Project Overview</h3>
+    <p>This project demonstrates sentiment analysis using machine learning. We'll:</p>
+    <ol>
+        <li>Load and explore a movie reviews dataset</li>
+        <li>Preprocess text data (cleaning, tokenization)</li>
+        <li>Convert text to numerical features (TF-IDF)</li>
+        <li>Train a logistic regression model</li>
+        <li>Evaluate the model's performance</li>
+        <li>Make predictions on new reviews</li>
+    </ol>
+    
+    <div class="note">
+        <strong>Note:</strong> This project includes embedded datasets so you can run it without external files.
+    </div>
+    
+    <h3>1. Import Required Libraries</h3>
+    <pre><code># Import necessary libraries
+import numpy as np
+import pandas as pd
+import re
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# Download NLTK resources (only needed first time)
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('omw-1.4')</code></pre>
+    
+    <div class="explanation">
+        <h4>Explanation:</h4>
+        <p>We import libraries for:
+        <ul>
+            <li>Data manipulation (numpy, pandas)</li>
+            <li>Text processing (re, nltk)</li>
+            <li>Feature extraction (TfidfVectorizer)</li>
+            <li>Model training and evaluation (LogisticRegression, metrics)</li>
+        </ul>
+        NLTK resources are downloaded for text preprocessing tasks.
+        </p>
+    </div>
+    
+    <h3>2. Load and Explore the Dataset</h3>
+    <div class="dataset">
+        <h4>Embedded Dataset (Movie Reviews)</h4>
+        <pre><code># Create a sample dataset (positive and negative reviews)
+data = {
+    'review': [
+        "This movie was absolutely fantastic! The acting was brilliant.",
+        "I loved every moment of this film. The plot was engaging.",
+        "Terrible movie. Waste of time and money.",
+        "The worst film I've seen this year. Horrible acting.",
+        "A masterpiece of cinema. Stunning visuals and storytelling.",
+        "Boring from start to finish. Nothing interesting happened.",
+        "The cast did an amazing job. Highly recommended!",
+        "I couldn't stand this movie. Left after 30 minutes.",
+        "Perfect in every way. A true classic.",
+        "Disappointing. Didn't live up to the hype."
+    ],
+    'sentiment': [1, 1, 0, 0, 1, 0, 1, 0, 1, 0]  # 1=positive, 0=negative
+}
+
+# Create DataFrame
+df = pd.DataFrame(data)
+print("Dataset shape:", df.shape)
+print("\nSample reviews:")
+print(df.head())</code></pre>
+    </div>
+    
+    <div class="explanation">
+        <h4>Explanation:</h4>
+        <p>We create a small dataset of movie reviews with sentiment labels (1=positive, 0=negative). In a real project, you would use a larger dataset like IMDB reviews, but this sample demonstrates the complete workflow.</p>
+    </div>
+    
+    <h3>3. Text Preprocessing</h3>
+    <pre><code># Initialize lemmatizer and stopwords
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
+
+def preprocess_text(text):
+    # Convert to lowercase
+    text = text.lower()
+    # Remove special characters and numbers
+    text = re.sub(r'[^a-zA-Z\s]', '', text)
+    # Tokenize
+    words = text.split()
+    # Remove stopwords and lemmatize
+    words = [lemmatizer.lemmatize(word) for word in words if word not in stop_words]
+    return ' '.join(words)
+
+# Apply preprocessing
+df['cleaned_review'] = df['review'].apply(preprocess_text)
+print("\nAfter preprocessing:")
+print(df[['review', 'cleaned_review']].head())</code></pre>
+    
+    <div class="explanation">
+        <h4>Explanation:</h4>
+        <p>Text preprocessing steps:
+        <ul>
+            <li>Convert to lowercase</li>
+            <li>Remove special characters and numbers</li>
+            <li>Tokenize (split into words)</li>
+            <li>Remove stopwords (common words like 'the', 'and')</li>
+            <li>Lemmatize (reduce words to base form: 'running' → 'run')</li>
+        </ul>
+        This standardization helps improve model performance.
+        </p>
+    </div>
+    
+    <h3>4. Feature Extraction (TF-IDF)</h3>
+    <pre><code># Initialize TF-IDF Vectorizer
+tfidf = TfidfVectorizer(max_features=1000)
+
+# Transform text to TF-IDF features
+X = tfidf.fit_transform(df['cleaned_review'])
+y = df['sentiment']
+
+# Display feature names and shape
+print("\nFeature names (first 20):", tfidf.get_feature_names_out()[:20])
+print("TF-IDF matrix shape:", X.shape)</code></pre>
+    
+    <div class="explanation">
+        <h4>Explanation:</h4>
+        <p>TF-IDF (Term Frequency-Inverse Document Frequency) converts text to numerical features:
+        <ul>
+            <li>Measures how important a word is to a document in a collection</li>
+            <li>max_features=1000 limits to top 1000 words by frequency</li>
+            <li>Output is a sparse matrix where each row represents a review and each column represents a word's TF-IDF score</li>
+        </ul>
+        </p>
+    </div>
+    
+    <h3>5. Split Data and Train Model</h3>
+    <pre><code># Split into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Initialize and train Logistic Regression model
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)</code></pre>
+    
+    <div class="explanation">
+        <h4>Explanation:</h4>
+        <p>We:
+        <ul>
+            <li>Split data into 70% training and 30% test sets</li>
+            <li>Use Logistic Regression which works well for binary classification</li>
+            <li>max_iter=1000 ensures convergence (may need more for larger datasets)</li>
+        </ul>
+        Logistic Regression predicts the probability of a review being positive/negative.
+        </p>
+    </div>
+    
+    <h3>6. Evaluate the Model</h3>
+    <pre><code># Make predictions
+y_pred = model.predict(X_test)
+
+# Evaluate performance
+print("\nConfusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+print("\nAccuracy:", accuracy_score(y_test, y_pred))
+
+# Display some predictions vs actual
+results = pd.DataFrame({
+    'Actual': y_test,
+    'Predicted': y_pred
+})
+print("\nSample predictions:")
+print(results.head())</code></pre>
+    
+    <div class="explanation">
+        <h4>Explanation:</h4>
+        <p>Evaluation metrics:
+        <ul>
+            <li>Confusion Matrix: Shows true positives, true negatives, false positives, false negatives</li>
+            <li>Classification Report: Precision, recall, F1-score for each class</li>
+            <li>Accuracy: Overall correct prediction percentage</li>
+        </ul>
+        For this small dataset, accuracy may vary but demonstrates the process.
+        </p>
+    </div>
+    
+    <h3>7. Make New Predictions</h3>
+    <pre><code># New reviews for prediction
+new_reviews = [
+    "This film was okay, not great but not terrible either",
+    "I hated everything about this awful movie",
+    "Brilliant performance by the lead actor, wonderful cinematography"
+]
+
+# Preprocess and predict
+new_reviews_cleaned = [preprocess_text(review) for review in new_reviews]
+new_reviews_tfidf = tfidf.transform(new_reviews_cleaned)
+predictions = model.predict(new_reviews_tfidf)
+
+# Display results
+print("\nPredictions for new reviews:")
+for review, pred in zip(new_reviews, predictions):
+    sentiment = "Positive" if pred == 1 else "Negative"
+    print(f"\nReview: {review}\nPredicted Sentiment: {sentiment}")</code></pre>
+    
+    <div class="explanation">
+        <h4>Explanation:</h4>
+        <p>We demonstrate the end-to-end process for new reviews:
+        <ol>
+            <li>Preprocess the text (same steps as training data)</li>
+            <li>Transform using the same TF-IDF vectorizer</li>
+            <li>Make predictions with our trained model</li>
+        </ol>
+        The model outputs 1 (positive) or 0 (negative) for each review.
+        </p>
+    </div>
+    
+    <h2>Complete Code Solution</h2>
+    <pre><code># Sentiment Analysis Complete Code
+
+# Import libraries
+import numpy as np
+import pandas as pd
+import re
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# Download NLTK resources
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+
+# Dataset
+data = {
+    'review': [
+        "This movie was absolutely fantastic! The acting was brilliant.",
+        "I loved every moment of this film. The plot was engaging.",
+        "Terrible movie. Waste of time and money.",
+        "The worst film I've seen this year. Horrible acting.",
+        "A masterpiece of cinema. Stunning visuals and storytelling.",
+        "Boring from start to finish. Nothing interesting happened.",
+        "The cast did an amazing job. Highly recommended!",
+        "I couldn't stand this movie. Left after 30 minutes.",
+        "Perfect in every way. A true classic.",
+        "Disappointing. Didn't live up to the hype."
+    ],
+    'sentiment': [1, 1, 0, 0, 1, 0, 1, 0, 1, 0]
+}
+df = pd.DataFrame(data)
+
+# Text preprocessing
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
+
+def preprocess_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-zA-Z\s]', '', text)
+    words = text.split()
+    words = [lemmatizer.lemmatize(word) for word in words if word not in stop_words]
+    return ' '.join(words)
+
+df['cleaned_review'] = df['review'].apply(preprocess_text)
+
+# Feature extraction
+tfidf = TfidfVectorizer(max_features=1000)
+X = tfidf.fit_transform(df['cleaned_review'])
+y = df['sentiment']
+
+# Split data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Train model
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
+
+# Evaluate
+y_pred = model.predict(X_test)
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+print("\nAccuracy:", accuracy_score(y_test, y_pred))
+
+# New predictions
+new_reviews = [
+    "This film was okay, not great but not terrible either",
+    "I hated everything about this awful movie",
+    "Brilliant performance by the lead actor, wonderful cinematography"
+]
+new_reviews_cleaned = [preprocess_text(review) for review in new_reviews]
+new_reviews_tfidf = tfidf.transform(new_reviews_cleaned)
+predictions = model.predict(new_reviews_tfidf)
+
+for review, pred in zip(new_reviews, predictions):
+    print(f"\nReview: {review}\nPredicted Sentiment: {'Positive' if pred == 1 else 'Negative'}")</code></pre>
+    
+    <h2>Project Enhancements</h2>
+    <p>To improve this project, consider:</p>
+    <ul>
+        <li>Using a larger dataset (e.g., IMDB reviews)</li>
+        <li>Experimenting with different classifiers (Random Forest, SVM)</li>
+        <li>Trying deep learning approaches (RNN, LSTM)</li>
+        <li>Adding more sophisticated text preprocessing (spell checking, emoji handling)</li>
+        <li>Implementing cross-validation for more reliable evaluation</li>
+    </ul>
+    
+    <a href="#" class="button" onclick="downloadFile()">Download This Project</a>
+    
+    <script>
+        // Set the time in minutes
+        let timeInMinutes = 45;
+        let time = timeInMinutes * 60; // convert to seconds
+        
+        const timerElement = document.getElementById('timer');
+        
+        function updateTimer() {
+            const minutes = Math.floor(time / 60);
+            let seconds = time % 60;
+            
+            // Add leading zero if seconds < 10
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            
+            timerElement.textContent = `${minutes}:${seconds}`;
+            
+            if (time <= 0) {
+                clearInterval(timerInterval);
+                timerElement.textContent = "Time's up!";
+                timerElement.style.color = "#f1c40f";
+                timerElement.style.backgroundColor = "#2c3e50";
+            } else {
+                time--;
+            }
+        }
+        
+        // Update the timer every second
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        // Initial call to display timer immediately
+        updateTimer();
+        
+        function downloadFile() {
+            // Get the HTML content
+            const htmlContent = `<!DOCTYPE html>${document.documentElement.innerHTML}`;
+            
+            // Create a Blob with the HTML content
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            
+            // Create a download link
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sentiment_analysis_project_sathya_tech.html';
+            
+            // Trigger the download
+            document.body.appendChild(a);
+            a.click();
+            
+            // Clean up
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

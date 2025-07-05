@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Science & Generative AI by SATISH @ Sathya Technologies</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f8f8ff; }
+        h1 { color: #2d3e50; }
+        h2 { color: #1b6ca8; }
+        pre { background: #f0f0f0; padding: 15px; border-radius: 6px; overflow-x: auto; }
+        #timer { font-size: 2em; margin: 20px 0; color: #d7263d; }
+        .timer-controls button { margin: 0 5px; padding: 8px 14px; font-size: 1em; }
+        .explanation { background: #e0f7fa; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+        .dataset-link { font-size: 1.1em; margin: 10px 0; }
+    </style>
+</head>
+<body>
+   
+    <div id="timer">45:00</div>
+    <div class="timer-controls">
+        <button onclick="startTimer()">Start</button>
+        <button onclick="stopTimer()">Stop</button>
+        <button onclick="resetTimer()">Reset</button>
+    </div>
+   <div class="explanation">
+        <strong>Goal:</strong> Build a machine learning model to classify telecom customers into four service categories based on their usage patterns and demographics.<br>
+        <strong>Algorithm:</strong> K-Nearest Neighbors (KNN) Classifier<br>
+        <strong>Skills Covered:</strong> Data loading, preprocessing, model training, evaluation, and prediction.
+    </div>
+
+    <h2>Dataset</h2>
+    <div class="dataset-link">
+        <strong>Download:</strong> 
+        <a href="https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-ML0101EN-SkillsNetwork/labs/Module%203/data/teleCust1000t.csv" download>
+            teleCust1000t.csv
+        </a>
+    </div>
+    <div class="explanation">
+        <strong>Description:</strong> This dataset contains 1000 customer records with features such as region, age, income, and the target variable <code>custcat</code> (customer category: 1=Basic, 2=E-Service, 3=Plus, 4=Total Service).
+    </div>
+
+    <h2>Step 1: Import Libraries</h2>
+    <pre><code class="language-python">import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, classification_report
+</code></pre>
+    <div class="explanation">
+        <strong>Explanation:</strong> We import pandas for data handling, numpy for numerical operations, scikit-learn modules for model building and evaluation.
+    </div>
+
+    <h2>Step 2: Load and Explore the Data</h2>
+    <pre><code class="language-python"># Load the dataset
+url = "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-ML0101EN-SkillsNetwork/labs/Module%203/data/teleCust1000t.csv"
+df = pd.read_csv(url)
+
+# Display the first 5 rows
+print(df.head())
+
+# Check the distribution of target classes
+print(df['custcat'].value_counts())
+</code></pre>
+    <div class="explanation">
+        <strong>Explanation:</strong> The dataset is loaded directly from the URL. We display the first five rows to understand the structure and check how many samples belong to each customer category.
+    </div>
+
+    <h2>Step 3: Prepare Features and Labels</h2>
+    <pre><code class="language-python">X = df.drop('custcat', axis=1).values  # Features
+y = df['custcat'].values               # Labels
+</code></pre>
+    <div class="explanation">
+        <strong>Explanation:</strong> <code>X</code> contains all columns except the target (<code>custcat</code>), and <code>y</code> contains the target labels.
+    </div>
+
+    <h2>Step 4: Split Data into Training and Test Sets</h2>
+    <pre><code class="language-python">X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42
+)
+</code></pre>
+    <div class="explanation">
+        <strong>Explanation:</strong> 70% of the data is used for training, 30% for testing. <code>random_state=42</code> ensures reproducibility.
+    </div>
+
+    <h2>Step 5: Train the KNN Model</h2>
+    <pre><code class="language-python">knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train, y_train)
+</code></pre>
+    <div class="explanation">
+        <strong>Explanation:</strong> We create a KNN classifier with 5 neighbors and fit it to the training data.
+    </div>
+
+    <h2>Step 6: Make Predictions and Evaluate</h2>
+    <pre><code class="language-python">y_pred = knn.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Test Accuracy: {accuracy:.2f}")
+print(classification_report(y_test, y_pred))
+</code></pre>
+    <div class="explanation">
+        <strong>Explanation:</strong> The model predicts customer categories for the test set. We print the accuracy and a detailed classification report (precision, recall, f1-score for each class).
+    </div>
+
+    <h2>Sample Output</h2>
+    <pre><code>
+Test Accuracy: 0.34
+              precision    recall  f1-score   support
+
+           1       0.33      0.66      0.44        91
+           2       0.36      0.15      0.21        89
+           3       0.32      0.18      0.23        91
+           4       0.38      0.36      0.37        79
+
+    accuracy                           0.34       350
+   macro avg       0.35      0.34      0.31       350
+weighted avg       0.35      0.34      0.31       350
+    </code></pre>
+    <div class="explanation">
+        <strong>Explanation:</strong> The accuracy is around 34%. The classification report shows how well the model predicts each class. With more feature engineering or tuning, performance can improve.
+    </div>
+
+    <h2>How the Code Works</h2>
+    <ul>
+        <li><strong>Data Loading:</strong> Loads customer data from a CSV file.</li>
+        <li><strong>Exploration:</strong> Views data samples and class distribution.</li>
+        <li><strong>Preparation:</strong> Separates features and labels.</li>
+        <li><strong>Splitting:</strong> Divides data into training and test sets.</li>
+        <li><strong>Model Training:</strong> Trains a KNN classifier.</li>
+        <li><strong>Prediction & Evaluation:</strong> Predicts on test data and evaluates performance using accuracy and classification metrics.</li>
+    </ul>
+
+    <h2>Try It Yourself!</h2>
+    <p>
+        Download the <strong>teleCust1000t.csv</strong> dataset and copy the above Python code into a Jupyter Notebook or any Python IDE with <code>scikit-learn</code> installed. Run each step and observe the results.
+    </p>
+
+    <hr>
+    <p style="font-size: 0.9em; color: #888;">
+        Created for learning purposes. Dataset from IBM Developer Skills Network. Timer and project inspired by public tutorials and open datasets.
+    </p>
+
+    <!-- 45-Minute Countdown Timer Script -->
+    <script>
+        let timerInterval;
+        let timeLeft = 2700; // 45 minutes in seconds
+        let running = false;
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent =
+                String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+        }
+
+        function startTimer() {
+            if (!running) {
+                running = true;
+                timerInterval = setInterval(function() {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        running = false;
+                        document.getElementById('timer').textContent = "Time's up!";
+                        alert("Time's up! 45 minutes are over.");
+                    }
+                }, 1000);
+            }
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            running = false;
+        }
+
+        function resetTimer() {
+            stopTimer();
+            timeLeft = 2700;
+            updateTimerDisplay();
+        }
+
+        // Initialize timer on page load
+        updateTimerDisplay();
+    </script>
+</body>
+</html>

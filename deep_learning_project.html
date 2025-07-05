@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Science & Generative AI by SATISH @ Sathya Technologies</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .timer {
+            font-size: 24px;
+            color: red;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        pre {
+            background: #efefef;
+            padding: 10px;
+            border-left: 5px solid #333;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Data Science & Generative AI by SATISH @ Sathya Technologies</h1>
+    <div class="timer">
+        Time Left: <span id="time">45:00</span>
+    </div>
+    <div class="section">
+        <h2>Project Title: Image Classification using CNN on Fashion MNIST</h2>
+        <p>This project uses a Convolutional Neural Network (CNN) to classify images of clothing from the Fashion MNIST dataset.</p>
+    </div>
+    <div class="section">
+        <h3>1. Dataset</h3>
+        <p>Fashion MNIST is a dataset of Zalando's article images consisting of a training set of 60,000 examples and a test set of 10,000 examples.</p>
+    </div>
+    <div class="section">
+        <h3>2. Python Code</h3>
+        <pre>
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from tensorflow.keras.datasets import fashion_mnist
+import matplotlib.pyplot as plt
+
+# Load dataset
+(x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
+
+# Normalize the data
+x_train, x_test = x_train / 255.0, x_test / 255.0
+
+# Reshape for CNN
+x_train = x_train.reshape(-1, 28, 28, 1)
+x_test = x_test.reshape(-1, 28, 28, 1)
+
+# Build CNN model
+model = models.Sequential([
+    layers.Conv2D(32, (3,3), activation='relu', input_shape=(28,28,1)),
+    layers.MaxPooling2D(2,2),
+    layers.Conv2D(64, (3,3), activation='relu'),
+    layers.MaxPooling2D(2,2),
+    layers.Flatten(),
+    layers.Dense(128, activation='relu'),
+    layers.Dense(10, activation='softmax')
+])
+
+# Compile model
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+# Train model
+model.fit(x_train, y_train, epochs=5, validation_data=(x_test, y_test))
+
+# Evaluate model
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print('Test accuracy:', test_acc)
+        </pre>
+    </div>
+    <div class="section">
+        <h3>3. Explanation</h3>
+        <ul>
+            <li><strong>Conv2D</strong>: Applies 2D convolution to extract features from images.</li>
+            <li><strong>MaxPooling2D</strong>: Reduces spatial dimensions to decrease computational complexity.</li>
+            <li><strong>Flatten</strong>: Converts 2D feature maps to 1D feature vectors.</li>
+            <li><strong>Dense</strong>: Fully connected layers for classification.</li>
+        </ul>
+    </div>
+    <div class="section">
+        <h3>4. Result</h3>
+        <p>The CNN model typically achieves over 90% accuracy on the Fashion MNIST test dataset after 5 epochs of training.</p>
+    </div>
+
+    <script>
+        let timeLeft = 45 * 60;
+        const timerEl = document.getElementById('time');
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            if (timeLeft > 0) {
+                timeLeft--;
+                setTimeout(updateTimer, 1000);
+            } else {
+                alert("Time's up!");
+            }
+        }
+
+        updateTimer();
+    </script>
+</body>
+</html>

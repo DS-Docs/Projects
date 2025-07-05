@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Science & Generative AI by SATISH @ Sathya Technologies</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .timer {
+            background-color: #e74c3c;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 24px;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .download-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Data Science & Generative AI by SATISH @ Sathya Technologies</h1>
+        
+        <div class="timer" id="timer">45:00</div>
+        
+        <h2>Deep Learning Project: Image Classification with CNN</h2>
+        
+        <h3>Project Description</h3>
+        <p>Implement a Convolutional Neural Network (CNN) to classify images from the CIFAR-10 dataset. The CIFAR-10 dataset consists of 60,000 32x32 color images in 10 classes, with 6,000 images per class.</p>
+        
+        <h3>Dataset Information</h3>
+        <p>The CIFAR-10 dataset is included in Keras and will be automatically downloaded when you run the code. It contains the following classes:</p>
+        <ul>
+            <li>Airplane</li>
+            <li>Automobile</li>
+            <li>Bird</li>
+            <li>Cat</li>
+            <li>Deer</li>
+            <li>Dog</li>
+            <li>Frog</li>
+            <li>Horse</li>
+            <li>Ship</li>
+            <li>Truck</li>
+        </ul>
+        
+        <h3>Project Requirements</h3>
+        <ol>
+            <li>Load and preprocess the CIFAR-10 dataset</li>
+            <li>Build a CNN model with at least 2 convolutional layers</li>
+            <li>Include pooling layers and dropout for regularization</li>
+            <li>Train the model and achieve at least 70% accuracy on the test set</li>
+            <li>Evaluate the model and show classification metrics</li>
+        </ol>
+        
+        <h3>Solution Code</h3>
+        <pre><code># Import necessary libraries
+import tensorflow as tf
+from tensorflow.keras import datasets, layers, models
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Load and preprocess the CIFAR-10 dataset
+(train_images, train_labels), (test_images, test_labels) = datasets.cifar10.load_data()
+
+# Normalize pixel values to be between 0 and 1
+train_images, test_images = train_images / 255.0, test_images / 255.0
+
+# Define the class names
+class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
+               'dog', 'frog', 'horse', 'ship', 'truck']
+
+# Build the CNN model
+model = models.Sequential()
+model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)))
+model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Conv2D(64, (3, 3), activation='relu')))
+model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Conv2D(64, (3, 3), activation='relu')))
+
+# Add dense layers on top
+model.add(layers.Flatten())
+model.add(layers.Dense(64, activation='relu'))
+model.add(layers.Dense(10))
+
+# Compile the model
+model.compile(optimizer='adam',
+              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+              metrics=['accuracy'])
+
+# Train the model
+history = model.fit(train_images, train_labels, epochs=10, 
+                    validation_data=(test_images, test_labels)))
+
+# Evaluate the model
+test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
+print(f"\nTest accuracy: {test_acc*100:.2f}%")
+
+# Plot training history
+plt.plot(history.history['accuracy'], label='accuracy')
+plt.plot(history.history['val_accuracy'], label = 'val_accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.ylim([0.5, 1])
+plt.legend(loc='lower right')
+plt.show()
+
+# Make predictions
+probability_model = tf.keras.Sequential([model, layers.Softmax()])
+predictions = probability_model.predict(test_images)
+
+# Show some predictions
+def plot_image(i, predictions_array, true_label, img):
+    true_label, img = true_label[i], img[i]
+    plt.grid(False)
+    plt.xticks([])
+    plt.yticks([])
+    plt.imshow(img)
+    predicted_label = np.argmax(predictions_array)
+    color = 'blue' if predicted_label == true_label else 'red'
+    plt.xlabel(f"{class_names[predicted_label]} {100*np.max(predictions_array):2.0f}% ({class_names[true_label[0]]})",
+               color=color)
+
+num_rows = 5
+num_cols = 3
+num_images = num_rows*num_cols
+plt.figure(figsize=(2*2*num_cols, 2*num_rows))
+for i in range(num_images):
+    plt.subplot(num_rows, 2*num_cols, 2*i+1)
+    plot_image(i, predictions[i], test_labels, test_images)
+plt.tight_layout()
+plt.show()</code></pre>
+        
+        <h3>Code Explanation</h3>
+        <ol>
+            <li><strong>Data Loading:</strong> The CIFAR-10 dataset is loaded directly from Keras datasets.</li>
+            <li><strong>Preprocessing:</strong> Pixel values are normalized to [0, 1] range.</li>
+            <li><strong>Model Architecture:</strong>
+                <ul>
+                    <li>Three convolutional layers with ReLU activation</li>
+                    <li>Max pooling layers for downsampling</li>
+                    <li>Flatten layer to transition from convolutional to dense layers</li>
+                    <li>Two dense layers with the final one having 10 outputs (one per class)</li>
+                </ul>
+            </li>
+            <li><strong>Training:</strong> The model is compiled with Adam optimizer and trained for 10 epochs.</li>
+            <li><strong>Evaluation:</strong> Model accuracy is evaluated on the test set and training history is plotted.</li>
+            <li><strong>Prediction:</strong> Sample predictions are visualized with confidence percentages.</li>
+        </ol>
+        
+        <h3>Expected Output</h3>
+        <p>After running the code, you should see:</p>
+        <ul>
+            <li>Training progress showing accuracy and loss for each epoch</li>
+            <li>Final test accuracy around 70-75%</li>
+            <li>A plot showing training and validation accuracy over epochs</li>
+            <li>A grid of sample test images with predictions (correct in blue, incorrect in red)</li>
+        </ul>
+        
+        <h3>Performance Optimization Tips</h3>
+        <ul>
+            <li>Increase the number of epochs (try 20-30) for better accuracy</li>
+            <li>Add more convolutional layers or increase filter sizes</li>
+            <li>Experiment with different architectures like ResNet or VGG</li>
+            <li>Use data augmentation to increase training data variety</li>
+        </ul>
+        
+        <a href="#" class="download-btn" onclick="downloadHTML()">Download Project as HTML</a>
+    </div>
+    
+    <script>
+        // Timer functionality
+        let timeLeft = 45 * 60; // 45 minutes in seconds
+        const timerElement = document.getElementById('timer');
+        
+        const timer = setInterval(() => {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            
+            timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                timerElement.textContent = "Time's up!";
+                timerElement.style.backgroundColor = "#2ecc71";
+            } else {
+                timeLeft--;
+            }
+        }, 1000);
+        
+        // Download functionality
+        function downloadHTML() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'DeepLearning_Project_CIFAR10_Satish_SathyaTech.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

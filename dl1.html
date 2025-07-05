@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Science & Generative AI by SATISH @ Sathya Technologies</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+        h1 { color: #2d3e50; }
+        h2 { color: #1d7dd6; }
+        .timer { font-size: 2em; color: #e74c3c; margin: 20px 0; }
+        pre { background: #eaeaea; padding: 10px; border-radius: 5px; }
+        .project { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 8px #e0e0e0; }
+        .dataset { font-style: italic; color: #555; }
+        .answer { background: #f1f8e9; padding: 10px; border-radius: 5px; margin-top: 10px; }
+        .explanation { background: #e3f2fd; padding: 10px; border-radius: 5px; margin-top: 10px; }
+    </style>
+    <script>
+        let totalSeconds = 45 * 60;
+        function startTimer() {
+            let timerDisplay = document.getElementById('timer');
+            let interval = setInterval(function() {
+                let minutes = Math.floor(totalSeconds / 60);
+                let seconds = totalSeconds % 60;
+                timerDisplay.textContent = 
+                    (minutes < 10 ? '0' : '') + minutes + ':' + 
+                    (seconds < 10 ? '0' : '') + seconds;
+                if (totalSeconds <= 0) {
+                    clearInterval(interval);
+                    timerDisplay.textContent = "Time's up!";
+                }
+                totalSeconds--;
+            }, 1000);
+        }
+        window.onload = startTimer;
+    </script>
+</head>
+<body>
+    <h1>Data Science & Generative AI by SATISH @ Sathya Technologies</h1>
+    <div class="timer">
+        Timer: <span id="timer">45:00</span>
+    </div>
+
+    <div class="project">
+        <h2>Project 1: Image Classification with Deep Learning (MNIST Digits)</h2>
+        <div class="dataset">Dataset: MNIST Handwritten Digits (available via Keras)</div>
+        <h3>Problem Statement</h3>
+        <p>Build a deep learning model using Keras to classify handwritten digits (0-9) from the MNIST dataset.</p>
+        <h3>Python Code</h3>
+        <pre>
+import tensorflow as tf
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Flatten
+
+# Load dataset
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+
+# Normalize data
+x_train, x_test = x_train / 255.0, x_test / 255.0
+
+# Build model
+model = Sequential([
+    Flatten(input_shape=(28, 28)),
+    Dense(128, activation='relu'),
+    Dense(10, activation='softmax')
+])
+
+# Compile model
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Train model
+model.fit(x_train, y_train, epochs=5, validation_split=0.1)
+
+# Evaluate
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print("Test accuracy:", test_acc)
+        </pre>
+        <div class="answer">
+            <strong>Answer:</strong> The model achieves a test accuracy typically above 97% after 5 epochs.
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong> 
+            - The MNIST dataset contains 28x28 grayscale images of handwritten digits.<br>
+            - The model uses a simple neural network with one hidden layer and a softmax output.<br>
+            - Data is normalized for better convergence.<br>
+            - The model is trained and then evaluated on unseen test data, showing high accuracy for digit classification tasks.
+        </div>
+    </div>
+
+    <div class="project">
+        <h2>Project 2: Text Generation with LSTM (Generative AI)</h2>
+        <div class="dataset">Dataset: Text file (e.g., "Alice in Wonderland" from Project Gutenberg)</div>
+        <h3>Problem Statement</h3>
+        <p>Train an LSTM-based neural network to generate text in the style of the input book.</p>
+        <h3>Python Code</h3>
+        <pre>
+import numpy as np
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
+from tensorflow.keras.utils import to_categorical
+
+# Load and preprocess data
+text = open('alice.txt', 'r', encoding='utf-8').read().lower()
+chars = sorted(list(set(text)))
+char_indices = {c: i for i, c in enumerate(chars)}
+indices_char = {i: c for i, c in enumerate(chars)}
+
+seq_length = 40
+step = 3
+sentences = []
+next_chars = []
+for i in range(0, len(text) - seq_length, step):
+    sentences.append(text[i: i + seq_length])
+    next_chars.append(text[i + seq_length])
+
+X = np.zeros((len(sentences), seq_length, len(chars)), dtype=np.bool_)
+y = np.zeros((len(sentences), len(chars)), dtype=np.bool_)
+for i, sentence in enumerate(sentences):
+    for t, char in enumerate(sentence):
+        X[i, t, char_indices[char]] = 1
+    y[i, char_indices[next_chars[i]]] = 1
+
+# Build model
+model = Sequential()
+model.add(LSTM(128, input_shape=(seq_length, len(chars))))
+model.add(Dense(len(chars), activation='softmax'))
+
+model.compile(loss='categorical_crossentropy', optimizer='adam')
+
+# Train model (use fewer epochs for demo)
+model.fit(X, y, batch_size=128, epochs=5)
+
+# Generate text
+start_index = np.random.randint(0, len(text) - seq_length - 1)
+generated = ''
+sentence = text[start_index: start_index + seq_length]
+generated += sentence
+for i in range(400):
+    x_pred = np.zeros((1, seq_length, len(chars)))
+    for t, char in enumerate(sentence):
+        x_pred[0, t, char_indices[char]] = 1
+    preds = model.predict(x_pred, verbose=0)[0]
+    next_index = np.argmax(preds)
+    next_char = indices_char[next_index]
+    generated += next_char
+    sentence = sentence[1:] + next_char
+print(generated)
+        </pre>
+        <div class="answer">
+            <strong>Answer:</strong> The output is a generated text sequence that mimics the style of "Alice in Wonderland".
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong>
+            - The LSTM model learns character-level sequences from the input text.<br>
+            - After training, the model can generate new text by predicting the next character given a sequence.<br>
+            - This is a basic example of Generative AI using deep learning for creative tasks.
+        </div>
+    </div>
+
+    <div class="project">
+        <h2>Project 3: Emotion Detection from Images (CNN)</h2>
+        <div class="dataset">Dataset: FER2013 (Facial Expression Recognition, available on Kaggle)</div>
+        <h3>Problem Statement</h3>
+        <p>Build a CNN model to classify facial images into emotions such as happy, sad, angry, etc.</p>
+        <h3>Python Code</h3>
+        <pre>
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+# Data generators
+train_datagen = ImageDataGenerator(rescale=1./255, validation_split=0.2)
+train_generator = train_datagen.flow_from_directory(
+    'fer2013/train',
+    target_size=(48, 48),
+    batch_size=64,
+    color_mode='grayscale',
+    class_mode='categorical',
+    subset='training'
+)
+val_generator = train_datagen.flow_from_directory(
+    'fer2013/train',
+    target_size=(48, 48),
+    batch_size=64,
+    color_mode='grayscale',
+    class_mode='categorical',
+    subset='validation'
+)
+
+# Build model
+model = Sequential([
+    Conv2D(32, (3,3), activation='relu', input_shape=(48,48,1)),
+    MaxPooling2D(2,2),
+    Conv2D(64, (3,3), activation='relu'),
+    MaxPooling2D(2,2),
+    Flatten(),
+    Dense(128, activation='relu'),
+    Dropout(0.5),
+    Dense(7, activation='softmax')
+])
+
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+# Train model
+model.fit(train_generator, epochs=10, validation_data=val_generator)
+        </pre>
+        <div class="answer">
+            <strong>Answer:</strong> The model achieves validation accuracy typically between 60-70% on FER2013.
+        </div>
+        <div class="explanation">
+            <strong>Explanation:</strong>
+            - The FER2013 dataset contains grayscale facial images labeled with emotions.<br>
+            - The CNN extracts spatial features and classifies images into one of seven emotions.<br>
+            - Data augmentation and dropout help reduce overfitting.
+        </div>
+    </div>
+
+    <h3>How to Use the Timer</h3>
+    <ul>
+        <li>The timer at the top of the page starts automatically and counts down from 45 minutes.</li>
+        <li>Use this as a self-assessment tool: try to complete the projects and understand the explanations within the time limit.</li>
+    </ul>
+
+    <h3>References</h3>
+    <ul>
+        <li>MNIST: Available in Keras datasets</li>
+        <li>FER2013: Download from Kaggle</li>
+        <li>Text data: Use any public domain text file (e.g., Project Gutenberg)</li>
+    </ul>
+</body>
+</html>

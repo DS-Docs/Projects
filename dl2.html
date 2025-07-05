@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Learning Project: Image Classification - Data Science & Generative AI by SATISH @ Sathya Technologies</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #0056b3;
+        }
+        pre {
+            background-color: #eee;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: "Courier New", Courier, monospace;
+            color: #d14;
+        }
+        .timer-container {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #e0f7fa;
+            border-radius: 5px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #00796b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center;">Data Science & Generative AI by SATISH @ Sathya Technologies</h1>
+
+        <div class="timer-container">
+            Time Remaining: <span id="timer">45:00</span>
+        </div>
+
+        <h2>Deep Learning Project: Image Classification with CIFAR-10</h2>
+        <p>This project will guide you through building a Convolutional Neural Network (CNN) to classify images from the CIFAR-10 dataset. CIFAR-10 is a widely used benchmark dataset in computer vision, consisting of 60,000 32x32 color images in 10 classes, with 6,000 images per class. There are 50,000 training images and 10,000 test images.</p>
+
+        <h3>1. Project Goal</h3>
+        <p>The goal is to train a CNN model that can accurately classify images into one of the 10 categories: airplane, automobile, bird, cat, deer, dog, frog, horse, ship, and truck.</p>
+
+        <h3>2. Dataset: CIFAR-10</h3>
+        <p>The CIFAR-10 dataset is readily available within deep learning libraries like TensorFlow/Keras and PyTorch. You don't need to manually download it as the code will handle it.</p>
+        <ul>
+            <li><strong>Dataset Name:</strong> CIFAR-10</li>
+            <li><strong>Classes:</strong> 10 (airplane, automobile, bird, cat, deer, dog, frog, horse, ship, truck)</li>
+            <li><strong>Image Size:</strong> 32x32 pixels, 3 color channels (RGB)</li>
+            <li><strong>Training Samples:</strong> 50,000</li>
+            <li><strong>Test Samples:</strong> 10,000</li>
+        </ul>
+
+        <h3>3. Setup and Prerequisites</h3>
+        <p>To run this project, you'll need Python installed, along with the following libraries:</p>
+        <pre><code>
+pip install tensorflow keras matplotlib numpy
+        </code></pre>
+
+        <h3>4. Python Code with Explanations</h3>
+
+        <h4>Step 4.1: Import Libraries</h4>
+        <p>We'll start by importing the necessary libraries.</p>
+        <pre><code class="language-python">
+import tensorflow as tf
+from tensorflow.keras import datasets, layers, models
+import matplotlib.pyplot as plt
+import numpy as np
+        </code></pre>
+
+        <h4>Step 4.2: Load and Preprocess the Dataset</h4>
+        <p>The CIFAR-10 dataset can be easily loaded using Keras's built-in functions. We'll also normalize the pixel values from 0-255 to 0-1 for better model performance.</p>
+        <pre><code class="language-python">
+# Load the CIFAR-10 dataset
+(train_images, train_labels), (test_images, test_labels) = datasets.cifar10.load_data()
+
+# Normalize pixel values to be between 0 and 1
+train_images, test_images = train_images / 255.0, test_images / 255.0
+
+# Define class names for plotting
+class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
+               'dog', 'frog', 'horse', 'ship', 'truck']
+
+print(f"Train images shape: {train_images.shape}")
+print(f"Train labels shape: {train_labels.shape}")
+print(f"Test images shape: {test_images.shape}")
+print(f"Test labels shape: {test_labels.shape}")
+        </code></pre>
+        <p><strong>Explanation:</strong>
+        <ul>
+            <li><code>datasets.cifar10.load_data()</code>: Downloads and loads the CIFAR-10 dataset, splitting it into training and testing sets.</li>
+            <li><code>train_images / 255.0, test_images / 255.0</code>: Normalizes the image pixel values. This is crucial as it helps the neural network converge faster and perform better.</li>
+            <li><code>class_names</code>: A list to map the numerical labels (0-9) to their corresponding class names, useful for visualization.</li>
+        </ul>
+        </p>
+
+        <h4>Step 4.3: Explore the Data (Optional but Recommended)</h4>
+        <p>Let's visualize a few images from the dataset to understand its content.</p>
+        <pre><code class="language-python">
+plt.figure(figsize=(10,10))
+for i in range(25):
+    plt.subplot(5,5,i+1)
+    plt.xticks([])
+    plt.yticks([])
+    plt.grid(False)
+    plt.imshow(train_images[i])
+    # The labels are arrays, so we need to flatten them
+    plt.xlabel(class_names[train_labels[i][0]])
+plt.show()
+        </code></pre>
+        <p><strong>Explanation:</strong> This code block displays the first 25 images from the training set, along with their corresponding labels. This helps in sanity-checking the loaded data.</p>
+
+        <h4>Step 4.4: Build the Convolutional Neural Network (CNN) Model</h4>
+        <p>We'll construct a sequential CNN model. CNNs are particularly well-suited for image data due to their ability to learn hierarchical features.</p>
+        <pre><code class="language-python">
+model = models.Sequential()
+
+# Convolutional Layer 1
+model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)))
+model.add(layers.MaxPooling2D((2, 2)))
+
+# Convolutional Layer 2
+model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+model.add(layers.MaxPooling2D((2, 2)))
+
+# Convolutional Layer 3
+model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+
+# Flatten the output to feed into Dense layers
+model.add(layers.Flatten())
+
+# Dense Layers (Fully Connected Layers)
+model.add(layers.Dense(64, activation='relu'))
+model.add(layers.Dense(10)) # Output layer with 10 units for 10 classes
+
+model.summary()
+        </code></pre>
+        <p><strong>Explanation:</strong>
+        <ul>
+            <li><code>models.Sequential()</code>: Initializes a linear stack of layers.</li>
+            <li><code>layers.Conv2D(filters, kernel_size, activation, input_shape)</code>: This is the core of a CNN.
+                <ul>
+                    <li><code>32</code>, <code>64</code>: Number of filters (feature detectors) the layer will learn. More filters allow the model to learn more complex features.</li>
+                    <li><code>(3, 3)</code>: Size of the convolutional kernel (filter).</li>
+                    <li><code>activation='relu'</code>: Rectified Linear Unit activation function, which introduces non-linearity.</li>
+                    <li><code>input_shape=(32, 32, 3)</code>: Specifies the shape of the input images (height, width, color channels).</li>
+                </ul>
+            </li>
+            <li><code>layers.MaxPooling2D((2, 2))</code>: Downsamples the feature maps, reducing their spatial dimensions and making the model more robust to small variations in the input.</li>
+            <li><code>layers.Flatten()</code>: Converts the 2D feature maps into a 1D vector, which can then be fed into fully connected (Dense) layers.</li>
+            <li><code>layers.Dense(units, activation)</code>: Standard neural network layer.
+                <ul>
+                    <li><code>64</code>: Number of neurons in the hidden layer.</li>
+                    <li><code>10</code>: Number of neurons in the output layer, corresponding to the 10 classes. No activation here, as we'll use `from_logits=True` in the loss function for numerical stability.</li>
+                </ul>
+            </li>
+            <li><code>model.summary()</code>: Prints a summary of the model's architecture, including the number of parameters.</li>
+        </ul>
+        </p>
+
+        <h4>Step 4.5: Compile and Train the Model</h4>
+        <p>Before training, we need to compile the model by specifying the optimizer, loss function, and metrics.</p>
+        <pre><code class="language-python">
+model.compile(optimizer='adam',
+              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+              metrics=['accuracy'])
+
+history = model.fit(train_images, train_labels, epochs=10,
+                    validation_data=(test_images, test_labels))
+        </code></pre>
+        <p><strong>Explanation:</strong>
+        <ul>
+            <li><code>optimizer='adam'</code>: An adaptive learning rate optimization algorithm that's generally a good default choice.</li>
+            <li><code>loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)</code>: The loss function for multi-class classification when labels are integers (not one-hot encoded). <code>from_logits=True</code> means the model's output layer should not have a softmax activation, and the loss function will handle the softmax internally for numerical stability.</li>
+            <li><code>metrics=['accuracy']</code>: We'll monitor the training and validation accuracy during training.</li>
+            <li><code>model.fit()</code>: This is where the training happens.
+                <ul>
+                    <li><code>train_images, train_labels</code>: Our training data.</li>
+                    <li><code>epochs=10</code>: Number of times the model will iterate over the entire training dataset. More epochs can lead to better performance but also to overfitting.</li>
+                    <li><code>validation_data=(test_images, test_labels)</code>: The data used to evaluate the model's performance on unseen data after each epoch.</li>
+                </ul>
+            </li>
+        </ul>
+        </p>
+
+        <h4>Step 4.6: Evaluate the Model</h4>
+        <p>After training, we can evaluate the model's performance on the test set.</p>
+        <pre><code class="language-python">
+plt.plot(history.history['accuracy'], label='accuracy')
+plt.plot(history.history['val_accuracy'], label = 'val_accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.ylim([0.5, 1])
+plt.legend(loc='lower right')
+plt.show()
+
+test_loss, test_acc = model.evaluate(test_images,  test_labels, verbose=2)
+print(f"\nTest accuracy: {test_acc}")
+        </code></pre>
+        <p><strong>Explanation:</strong>
+        <ul>
+            <li>Plots the training and validation accuracy over epochs, which helps visualize overfitting (if validation accuracy starts to drop while training accuracy continues to rise).</li>
+            <li><code>model.evaluate()</code>: Calculates the loss and metrics on the provided test data.</li>
+        </ul>
+        </p>
+
+        <h4>Step 4.7: Make Predictions</h4>
+        <p>Let's see how the model performs on a few individual test images.</p>
+        <pre><code class="language-python">
+probability_model = tf.keras.Sequential([model, tf.keras.layers.Softmax()])
+predictions = probability_model.predict(test_images)
+
+# Function to plot image and prediction
+def plot_image_prediction(i, predictions_array, true_label, img):
+    true_label = true_label[i]
+    img = img[i]
+    plt.grid(False)
+    plt.xticks([])
+    plt.yticks([])
+
+    plt.imshow(img, cmap=plt.cm.binary)
+
+    predicted_label = np.argmax(predictions_array)
+    color = 'blue' if predicted_label == true_label else 'red'
+
+    plt.xlabel(f"Predicted: {class_names[predicted_label]} ({100*np.max(predictions_array):.2f}%)",
+               color=color)
+
+# Function to plot prediction probabilities
+def plot_value_array(i, predictions_array, true_label):
+    true_label = true_label[i]
+    plt.grid(False)
+    plt.xticks(range(10))
+    plt.yticks([])
+    thisplot = plt.bar(range(10), predictions_array, color="#777777")
+    plt.ylim([0, 1])
+    predicted_label = np.argmax(predictions_array)
+
+    thisplot[predicted_label].set_color('red')
+    thisplot[true_label[0]].set_color('blue')
+
+# Plotting some predictions
+num_rows = 5
+num_cols = 3
+num_images = num_rows * num_cols
+plt.figure(figsize=(2 * 2 * num_cols, 2 * num_rows))
+for i in range(num_images):
+    plt.subplot(num_rows, 2 * num_cols, 2 * i + 1)
+    plot_image_prediction(i, predictions[i], test_labels, test_images)
+    plt.subplot(num_rows, 2 * num_cols, 2 * i + 2)
+    plot_value_array(i, predictions[i], test_labels)
+plt.tight_layout()
+plt.show()
+        </code></pre>
+        <p><strong>Explanation:</strong>
+        <ul>
+            <li><code>probability_model = tf.keras.Sequential([model, tf.keras.layers.Softmax()])</code>: Adds a Softmax layer to the trained model to convert the raw output logits into probabilities, making them easier to interpret.</li>
+            <li><code>predictions = probability_model.predict(test_images)</code>: Generates predictions for all images in the test set.</li>
+            <li>The <code>plot_image_prediction</code> and <code>plot_value_array</code> functions are helper functions to visualize the image, its true label, the predicted label, and the probability distribution across all classes. Correct predictions are shown in blue, incorrect in red.</li>
+        </ul>
+        </p>
+
+        <h3>5. Answers and Explanations</h3>
+        <p>As you run through the code, observe the following:</p>
+        <ul>
+            <li><strong>Dataset Loading & Preprocessing:</strong> The shapes of the training and testing sets confirm the number of images and their dimensions. Normalization ensures that all pixel values are within a consistent range, which helps the gradient descent optimization process.</li>
+            <li><strong>Model Architecture:</strong> The <code>model.summary()</code> output shows the layers, their output shapes, and the number of trainable parameters. Notice how the image dimensions decrease after `MaxPooling2D` layers, and the number of filters increases after `Conv2D` layers, allowing the network to capture increasingly complex features.</li>
+            <li><strong>Training Process:</strong> During training, you'll see the loss decreasing and accuracy increasing for both training and validation sets. If the validation accuracy starts to diverge significantly from the training accuracy (i.e., training accuracy keeps improving but validation accuracy plateaus or drops), it's an indicator of overfitting.</li>
+            <li><strong>Evaluation:</strong> The final test accuracy provides a single metric for how well your trained model generalizes to unseen data. For CIFAR-10, a simple CNN might achieve 65-75% accuracy. More complex architectures or techniques like data augmentation can further improve this.</li>
+            <li><strong>Predictions:</strong> The visualization of predictions helps you qualitatively assess the model's performance. You can see which classes it struggles with and which it classifies correctly with high confidence.</li>
+        </ul>
+        <p><strong>What you've learned:</strong> This project demonstrates the fundamental steps of a deep learning image classification task:</p>
+        <ol>
+            <li>Loading and preparing image data.</li>
+            <li>Designing and building a Convolutional Neural Network (CNN) architecture.</li>
+            <li>Compiling the model with an optimizer and loss function.</li>
+            <li>Training the model on the dataset.</li>
+            <li>Evaluating its performance on unseen data.</li>
+            <li>Making and visualizing predictions.</li>
+        </ol>
+
+        <h3>6. Further Experimentation (Beyond 45 Minutes)</h3>
+        <p>To deepen your understanding, consider these extensions:</p>
+        <ul>
+            <li><strong>Data Augmentation:</strong> Use <code>tf.keras.preprocessing.image.ImageDataGenerator</code> to apply random transformations (e.g., rotations, flips, shifts) to the training images. This helps prevent overfitting and improves generalization.</li>
+            <li><strong>More Complex CNNs:</strong> Add more convolutional layers, increase filter sizes, or use different activation functions.</li>
+            <li><strong>Regularization:</strong> Implement dropout layers (<code>layers.Dropout</code>) to prevent overfitting by randomly setting a fraction of input units to 0 at each update during training time, which helps prevent co-adaptation of neurons.</li>
+            <li><strong>Transfer Learning:</strong> Instead of building a CNN from scratch, use a pre-trained model (e.g., VGG16, ResNet) on a large dataset like ImageNet and fine-tune it for CIFAR-10. This often leads to significantly better performance with less training data.</li>
+            <li><strong>Hyperparameter Tuning:</strong> Experiment with different learning rates, batch sizes, and optimizer settings.</li>
+        </ul>
+    </div>
+
+    <script>
+        // Timer functionality
+        let timeInSeconds = 45 * 60; // 45 minutes in seconds
+        const timerDisplay = document.getElementById('timer');
+        let timerInterval;
+
+        function startTimer() {
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            const minutes = Math.floor(timeInSeconds / 60);
+            const seconds = timeInSeconds % 60;
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            if (timeInSeconds <= 0) {
+                clearInterval(timerInterval);
+                timerDisplay.textContent = "Time's Up!";
+                alert("Your 45 minutes are up! Hope you learned a lot!");
+            } else {
+                timeInSeconds--;
+            }
+        }
+
+        // Start the timer when the page loads
+        window.onload = startTimer;
+    </script>
+</body>
+</html>
