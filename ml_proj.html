@@ -1,0 +1,104 @@
+<html>
+<head>
+  <title>Data Science & Generative AI by SATISH @ Sathya Technologies</title>
+  <script>
+    var timer = 45*60; // 45 minutes in seconds
+    function countdown() {
+      var minutes = Math.floor(timer / 60);
+      var seconds = timer % 60;
+      document.getElementById("timer").innerHTML = minutes + ":" + seconds;
+      timer--;
+      if (timer < 0) {
+        alert("Time's up!");
+      } else {
+        setTimeout(countdown, 1000);
+      }
+    }
+  </script>
+</head>
+<body onload="countdown()">
+  <h1>Data Science & Generative AI by SATISH @ Sathya Technologies</h1>
+  <h2>Project 1: Classification using Logistic Regression</h2>
+  <p>Problem Statement: Predict whether a customer will buy a car based on their age and income.</p>
+  <p>Dataset:</p>
+  <table border="1">
+    <tr><th>Age</th><th>Income</th><th>Purchased</th></tr>
+    <tr><td>25</td><td>40000</td><td>0</td></tr>
+    <tr><td>30</td><td>60000</td><td>1</td></tr>
+    <tr><td>35</td><td>80000</td><td>1</td></tr>
+    <tr><td>20</td><td>30000</td><td>0</td></tr>
+    <tr><td>40</td><td>100000</td><td>1</td></tr>
+  </table>
+  <p>Code:</p>
+  <pre>
+    import pandas as pd
+    from sklearn.model_selection import train_test_split
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import accuracy_score
+    
+    # Load dataset
+    df = pd.DataFrame({'Age': [25, 30, 35, 20, 40], 
+                       'Income': [40000, 60000, 80000, 30000, 100000], 
+                       'Purchased': [0, 1, 1, 0, 1]})
+    
+    # Split dataset into features (X) and target (y)
+    X = df[['Age', 'Income']]
+    y = df['Purchased']
+    
+    # Split data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+    # Create and train logistic regression model
+    model = LogisticRegression()
+    model.fit(X_train, y_train)
+    
+    # Make predictions on test set
+    y_pred = model.predict(X_test)
+    
+    # Evaluate model accuracy
+    accuracy = accuracy_score(y_test, y_pred)
+    print("Model Accuracy:", accuracy)
+  </pre>
+  <p>Answer: Model Accuracy: 1.0</p>
+  <p>Explanation: In this project, we used logistic regression to predict whether a customer will buy a car based on their age and income.</p>
+  
+  <h2>Project 2: Clustering using K-Means</h2>
+  <p>Problem Statement: Group similar customers based on their spending habits.</p>
+  <p>Dataset:</p>
+  <table border="1">
+    <tr><th>Customer ID</th><th>Spending</th></tr>
+    <tr><td>1</td><td>100</td></tr>
+    <tr><td>2</td><td>200</td></tr>
+    <tr><td>3</td><td>50</td></tr>
+    <tr><td>4</td><td>300</td></tr>
+    <tr><td>5</td><td>150</td></tr>
+  </table>
+  <p>Code:</p>
+  <pre>
+    import pandas as pd
+    from sklearn.cluster import KMeans
+    import matplotlib.pyplot as plt
+    
+    # Load dataset
+    df = pd.DataFrame({'Customer ID': [1, 2, 3, 4, 5], 
+                       'Spending': [100, 200, 50, 300, 150]})
+    
+    # Create K-Means model with 2 clusters
+    model = KMeans(n_clusters=2)
+    
+    # Fit model to data
+    model.fit(df[['Spending']])
+    
+    # Predict cluster labels
+    labels = model.predict(df[['Spending']])
+    
+    # Plot clusters
+    plt.scatter(df['Spending'], [0]*len(df), c=labels)
+    plt.show()
+  </pre>
+  <p>Answer: Cluster labels: [0, 1, 0, 1, 0]</p>
+  <p>Explanation: In this project, we used K-Means clustering to group similar customers based on their spending habits.</p>
+  
+  <p id="timer"></p>
+</body>
+</html>
