@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Science & Generative AI by SATISH @ Sathya Technologies</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        .timer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 24px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .dataset {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, monospace;
+        }
+        .solution {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-left: 4px solid #2980b9;
+            margin: 15px 0;
+        }
+        .explanation {
+            background-color: #e8f8f5;
+            padding: 15px;
+            border-left: 4px solid #27ae60;
+            margin: 15px 0;
+        }
+        .download-btn {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .download-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Data Science & Generative AI by SATISH @ Sathya Technologies</h1>
+        
+        <h2>Machine Learning Project: Customer Churn Prediction</h2>
+        
+        <div class="timer" id="timer">45:00</div>
+        
+        <h3>Project Description</h3>
+        <p>Build a machine learning model to predict customer churn for a telecom company. The model should classify whether a customer will leave the service (churn) or not based on various features like account length, customer service calls, international plan, etc.</p>
+        
+        <h3>Dataset</h3>
+        <div class="dataset">
+            <p>The dataset contains the following columns:</p>
+            <ul>
+                <li><strong>state:</strong> The US state where the customer resides (categorical)</li>
+                <li><strong>account_length:</strong> Number of days the customer has been with the company (numerical)</li>
+                <li><strong>area_code:</strong> Area code (categorical)</li>
+                <li><strong>international_plan:</strong> Whether the customer has an international plan (yes/no)</li>
+                <li><strong>voice_mail_plan:</strong> Whether the customer has a voicemail plan (yes/no)</li>
+                <li><strong>number_vmail_messages:</strong> Number of voicemail messages (numerical)</li>
+                <li><strong>total_day_minutes:</strong> Total minutes of day calls (numerical)</li>
+                <li><strong>total_day_calls:</strong> Total number of day calls (numerical)</li>
+                <li><strong>total_day_charge:</strong> Total charge of day calls (numerical)</li>
+                <li><strong>total_eve_minutes:</strong> Total minutes of evening calls (numerical)</li>
+                <li><strong>total_eve_calls:</strong> Total number of evening calls (numerical)</li>
+                <li><strong>total_eve_charge:</strong> Total charge of evening calls (numerical)</li>
+                <li><strong>total_night_minutes:</strong> Total minutes of night calls (numerical)</li>
+                <li><strong>total_night_calls:</strong> Total number of night calls (numerical)</li>
+                <li><strong>total_night_charge:</strong> Total charge of night calls (numerical)</li>
+                <li><strong>total_intl_minutes:</strong> Total minutes of international calls (numerical)</li>
+                <li><strong>total_intl_calls:</strong> Total number of international calls (numerical)</li>
+                <li><strong>total_intl_charge:</strong> Total charge of international calls (numerical)</li>
+                <li><strong>customer_service_calls:</strong> Number of customer service calls (numerical)</li>
+                <li><strong>churn:</strong> Whether the customer churned (True/False) - Target variable</li>
+            </ul>
+            
+            <p>Sample data:</p>
+            <pre>
+state,account_length,area_code,international_plan,voice_mail_plan,number_vmail_messages,total_day_minutes,total_day_calls,total_day_charge,total_eve_minutes,total_eve_calls,total_eve_charge,total_night_minutes,total_night_calls,total_night_charge,total_intl_minutes,total_intl_calls,total_intl_charge,customer_service_calls,churn
+KS,128,415,no,yes,25,265.1,110,45.07,197.4,99,16.78,244.7,91,11.01,10.0,3,2.7,1,False
+OH,107,415,no,yes,26,161.6,123,27.47,195.5,103,16.62,254.4,103,11.45,13.7,3,3.7,1,False
+NJ,137,415,no,no,0,243.4,114,41.38,121.2,110,10.3,162.6,104,7.32,12.2,5,3.29,0,False
+OH,84,408,yes,no,0,299.4,71,50.9,61.9,88,5.26,196.9,89,8.86,6.6,7,1.78,2,True
+OK,75,415,yes,no,0,166.7,113,28.34,148.3,122,12.61,186.9,121,8.41,10.1,3,2.73,3,True
+            </pre>
+            
+            <a href="https://raw.githubusercontent.com/satish-sathya-tech/churn-prediction/main/churn_data.csv" class="download-btn">Download Full Dataset</a>
+        </div>
+        
+        <h3>Solution Code</h3>
+        <div class="solution">
+            <pre><code>
+# Import necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, accuracy_score
+
+# Load the dataset
+df = pd.read_csv('churn_data.csv')
+
+# Preprocessing
+# Encode categorical variables
+label_encoder = LabelEncoder()
+df['state'] = label_encoder.fit_transform(df['state'])
+df['international_plan'] = label_encoder.fit_transform(df['international_plan'])
+df['voice_mail_plan'] = label_encoder.fit_transform(df['voice_mail_plan'])
+
+# Separate features and target
+X = df.drop('churn', axis=1)
+y = df['churn']
+
+# Split data into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Feature scaling
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Initialize and train the model
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# Make predictions
+y_pred = model.predict(X_test)
+
+# Evaluate the model
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+            </code></pre>
+            
+            <a href="churn_prediction_solution.py" class="download-btn" download>Download Solution Code</a>
+        </div>
+        
+        <h3>Explanation</h3>
+        <div class="explanation">
+            <h4>1. Data Loading and Preparation</h4>
+            <p>We start by loading the dataset using pandas. The dataset contains both numerical and categorical features that need to be processed before feeding them to our machine learning model.</p>
+            
+            <h4>2. Data Preprocessing</h4>
+            <p>Categorical variables like 'state', 'international_plan', and 'voice_mail_plan' are encoded using LabelEncoder which converts them into numerical values that the model can understand.</p>
+            
+            <h4>3. Train-Test Split</h4>
+            <p>The data is split into training (80%) and testing (20%) sets to evaluate the model's performance on unseen data.</p>
+            
+            <h4>4. Feature Scaling</h4>
+            <p>We use StandardScaler to normalize the features so that they're on the same scale, which helps improve the performance of many machine learning algorithms.</p>
+            
+            <h4>5. Model Selection and Training</h4>
+            <p>We chose Random Forest classifier for this problem because:
+                <ul>
+                    <li>It handles both numerical and categorical data well</li>
+                    <li>It's robust to outliers</li>
+                    <li>It provides feature importance which helps in understanding what factors contribute most to customer churn</li>
+                </ul>
+            </p>
+            
+            <h4>6. Model Evaluation</h4>
+            <p>We evaluate the model using accuracy and a detailed classification report that includes precision, recall, and f1-score for both classes (churned and not churned).</p>
+            
+            <h4>Potential Improvements</h4>
+            <p>To further improve the model:
+                <ul>
+                    <li>Try different algorithms like Gradient Boosting or Neural Networks</li>
+                    <li>Perform more extensive feature engineering</li>
+                    <li>Address class imbalance if present (using SMOTE or class weights)</li>
+                    <li>Optimize hyperparameters using GridSearchCV or RandomizedSearchCV</li>
+                </ul>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Timer functionality
+        function startTimer(duration, display) {
+            let timer = duration, minutes, seconds;
+            const interval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(interval);
+                    display.textContent = "Time's up!";
+                    display.style.backgroundColor = "#e74c3c";
+                }
+            }, 1000);
+        }
+
+        window.onload = function () {
+            const fortyFiveMinutes = 45 * 60,
+                display = document.querySelector('#timer');
+            startTimer(fortyFiveMinutes, display);
+        };
+    </script>
+</body>
+</html>

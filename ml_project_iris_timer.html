@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Machine Learning Project - Data Science & Generative AI by SATISH @ Sathya Technologies</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1, h2 {
+            color: #0056b3;
+        }
+        .timer {
+            font-size: 20px;
+            font-weight: bold;
+            color: #d9534f;
+        }
+        pre {
+            background-color: #eef;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+    <script>
+        let totalSeconds = 45 * 60;
+        function startTimer() {
+            let timer = document.getElementById("timer");
+            setInterval(function() {
+                let minutes = Math.floor(totalSeconds / 60);
+                let seconds = totalSeconds % 60;
+                timer.textContent = `Time Left: ${minutes}m ${seconds}s`;
+                if (totalSeconds > 0) {
+                    totalSeconds--;
+                }
+            }, 1000);
+        }
+        window.onload = startTimer;
+    </script>
+</head>
+<body>
+    <h1>Data Science & Generative AI by SATISH @ Sathya Technologies</h1>
+    <div class="timer" id="timer">Time Left: 45m 0s</div>
+
+    <h2>Project Title: Predicting Iris Species Using Machine Learning</h2>
+
+    <h3>Problem Statement:</h3>
+    <p>We aim to build a classifier that predicts the species of an iris flower based on its sepal and petal dimensions.</p>
+
+    <h3>Dataset:</h3>
+    <p>The Iris dataset contains 150 rows and 5 columns: SepalLengthCm, SepalWidthCm, PetalLengthCm, PetalWidthCm, and Species.</p>
+
+    <h3>Python Code:</h3>
+    <pre>
+import pandas as pd
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report
+
+# Load dataset
+iris = load_iris()
+X = pd.DataFrame(iris.data, columns=iris.feature_names)
+y = pd.Series(iris.target)
+
+# Split the dataset
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Train model
+model = RandomForestClassifier()
+model.fit(X_train, y_train)
+
+# Predict and evaluate
+predictions = model.predict(X_test)
+print(classification_report(y_test, predictions, target_names=iris.target_names))
+    </pre>
+
+    <h3>Explanation:</h3>
+    <ul>
+        <li>We use the Iris dataset from sklearn.</li>
+        <li>Data is split into 70% training and 30% testing.</li>
+        <li>RandomForestClassifier is used for its high accuracy and robustness.</li>
+        <li>The classification report shows precision, recall, and f1-score for each class.</li>
+    </ul>
+</body>
+</html>
